@@ -14,20 +14,20 @@
  * limitations under the License.
  */
 
-package me.snowdrop.data.hibernatesearch.core.mapping;
-
-import org.springframework.data.mapping.PersistentEntity;
-import org.springframework.data.mapping.model.BasicPersistentEntity;
-import org.springframework.data.util.TypeInformation;
+package me.snowdrop.data.hibernatesearch.core.query;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class HibernateSearchPersistentEntity<T> extends BasicPersistentEntity<T, HibernateSearchPersistentProperty>
-  implements PersistentEntity<T, HibernateSearchPersistentProperty> {
+public class SimpleField implements Field {
+  private final String name;
 
-	public HibernateSearchPersistentEntity(TypeInformation<T> information) {
-		super(information);
-	}
+  public SimpleField(String name) {
+    this.name = name;
+  }
 
+  @Override
+  public String getName() {
+    return name;
+  }
 }

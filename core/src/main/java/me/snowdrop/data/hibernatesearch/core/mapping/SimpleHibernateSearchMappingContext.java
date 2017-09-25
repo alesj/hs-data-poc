@@ -16,10 +16,8 @@
 
 package me.snowdrop.data.hibernatesearch.core.mapping;
 
-import java.beans.PropertyDescriptor;
-import java.lang.reflect.Field;
-
 import org.springframework.data.mapping.context.AbstractMappingContext;
+import org.springframework.data.mapping.model.Property;
 import org.springframework.data.mapping.model.SimpleTypeHolder;
 import org.springframework.data.util.TypeInformation;
 
@@ -28,12 +26,12 @@ import org.springframework.data.util.TypeInformation;
  */
 public class SimpleHibernateSearchMappingContext<T> extends AbstractMappingContext<HibernateSearchPersistentEntity<?>, HibernateSearchPersistentProperty> {
   @Override
-  protected <T> HibernateSearchPersistentEntity<?> createPersistentEntity(TypeInformation<T> typeInformation) {
-    return new HibernateSearchPersistentEntity<>(typeInformation);
-  }
+	protected <U> HibernateSearchPersistentEntity<U> createPersistentEntity(TypeInformation<U> typeInformation) {
+		return new HibernateSearchPersistentEntity<U>(typeInformation);
+	}
 
-  @Override
-  protected HibernateSearchPersistentProperty createPersistentProperty(Field field, PropertyDescriptor descriptor, HibernateSearchPersistentEntity<?> owner, SimpleTypeHolder simpleTypeHolder) {
-    return new SimpleHibernateSearchPersistentProperty<>(field, descriptor, owner, simpleTypeHolder);
-  }
+	@Override
+	protected HibernateSearchPersistentProperty createPersistentProperty(Property property, HibernateSearchPersistentEntity<?> entity, SimpleTypeHolder simpleTypeHolder) {
+		return new SimpleHibernateSearchPersistentProperty<>(property, entity, simpleTypeHolder);
+	}
 }

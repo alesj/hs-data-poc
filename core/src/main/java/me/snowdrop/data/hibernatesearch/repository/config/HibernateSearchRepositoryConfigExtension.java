@@ -47,9 +47,9 @@ public class HibernateSearchRepositoryConfigExtension extends RepositoryConfigur
     return Collections.singleton(HibernateSearchRepository.class);
   }
 
-  @Override
-  public String getRepositoryFactoryClassName() {
-    return HibernateSearchRepositoryFactoryBean.class.getName();
+	@Override
+	public String getRepositoryFactoryBeanClassName() {
+		return HibernateSearchRepositoryFactoryBean.class.getName();
   }
 
   @Override

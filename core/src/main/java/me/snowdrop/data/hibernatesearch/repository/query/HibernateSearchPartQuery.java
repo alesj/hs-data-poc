@@ -17,12 +17,11 @@
 package me.snowdrop.data.hibernatesearch.repository.query;
 
 import me.snowdrop.data.hibernatesearch.core.HibernateSearchOperations;
-import me.snowdrop.data.hibernatesearch.core.mapping.HibernateSearchPersistentProperty;
 import me.snowdrop.data.hibernatesearch.core.query.BaseQuery;
 import me.snowdrop.data.hibernatesearch.core.query.CriteriaQuery;
 import me.snowdrop.data.hibernatesearch.repository.query.parser.HibernateSearchQueryCreator;
 import me.snowdrop.data.hibernatesearch.spi.Query;
-import org.springframework.data.mapping.context.MappingContext;
+import org.springframework.data.mapping.PathHandleCreator;
 import org.springframework.data.repository.query.ParametersParameterAccessor;
 import org.springframework.data.repository.query.QueryMethod;
 import org.springframework.data.repository.query.parser.PartTree;
@@ -32,12 +31,12 @@ import org.springframework.data.repository.query.parser.PartTree;
  */
 public class HibernateSearchPartQuery extends AbstractHibernateSearchRepositoryQuery {
   private final PartTree tree;
-  private final MappingContext<?, HibernateSearchPersistentProperty> mappingContext;
 
   public HibernateSearchPartQuery(QueryMethod queryMethod, HibernateSearchOperations hibernateSearchOperations) {
     super(queryMethod, hibernateSearchOperations);
-    this.tree = new PartTree(queryMethod.getName(), queryMethod.getEntityInformation().getJavaType());
-    this.mappingContext = hibernateSearchOperations.getMappingContext();
+		Class<?> entityClass = queryMethod.getEntityInformation().getJavaType();
+		PathHandleCreator creator = new HibernateSearchPathHandleCreator(hibernateSearchOperations.getSearchIntegrator(entityClass));
+		this.tree = new PartTree(queryMethod.getName(), entityClass, creator);
   }
 
   protected boolean isModify(Query<?> query) {
@@ -45,8 +44,8 @@ public class HibernateSearchPartQuery extends AbstractHibernateSearchRepositoryQ
   }
 
   protected boolean isExistsProjection(Query<?> query) {
-    return tree.isExistsProjection() != null && tree.isExistsProjection();
-  }
+		return tree.isExistsProjection();
+	}
 
   protected boolean isCountProjection(Query<?> query) {
     return tree.isCountProjection();
@@ -54,7 +53,7 @@ public class HibernateSearchPartQuery extends AbstractHibernateSearchRepositoryQ
 
   protected BaseQuery<?> createQuery(ParametersParameterAccessor accessor) {
     Class<?> entityClass = getQueryMethod().getEntityInformation().getJavaType();
-    CriteriaQuery<?> query = new HibernateSearchQueryCreator(entityClass, tree, accessor, mappingContext).createQuery();
+    CriteriaQuery<?> query = new HibernateSearchQueryCreator(entityClass, tree, accessor).createQuery();
 
     query.setMaxResults(tree.getMaxResults());
     query.setDistinct(tree.isDistinct());

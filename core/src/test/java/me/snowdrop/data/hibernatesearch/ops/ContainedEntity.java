@@ -16,6 +16,7 @@ import org.springframework.data.annotation.Id;
 
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Table;
 
 @Setter
@@ -30,7 +31,7 @@ public class ContainedEntity implements AbstractEntity {
   @Id
   @DocumentId
   @javax.persistence.Id
-  @GeneratedValue
+  @GeneratedValue(strategy = GenerationType.IDENTITY)
   private Long id;
   @Field(name = "containedName")
   private String name;

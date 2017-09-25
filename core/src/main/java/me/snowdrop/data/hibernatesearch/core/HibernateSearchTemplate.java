@@ -25,6 +25,8 @@ import me.snowdrop.data.hibernatesearch.core.query.BaseQuery;
 import me.snowdrop.data.hibernatesearch.spi.DatasourceMapper;
 import me.snowdrop.data.hibernatesearch.spi.Query;
 import me.snowdrop.data.hibernatesearch.spi.QueryAdapter;
+import me.snowdrop.data.hibernatesearch.spi.SearchIntegratorAccessor;
+import org.hibernate.search.spi.SearchIntegrator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -48,8 +50,18 @@ public class HibernateSearchTemplate implements HibernateSearchOperations {
     return queryAdapter.list(query);
   }
 
-  @Override
-  public synchronized MappingContext<?, HibernateSearchPersistentProperty> getMappingContext() {
+	@Override
+	public SearchIntegrator getSearchIntegrator(Class<?> entityClass) {
+		QueryAdapter<?> queryAdapter = datasourceMapper.createQueryAdapter(entityClass);
+		if (queryAdapter instanceof SearchIntegratorAccessor) {
+			return SearchIntegratorAccessor.class.cast(queryAdapter).getSearchIntegrator();
+		} else {
+			throw new IllegalArgumentException("QueryAdapter instance must implement SearchIntegratorAccessor: " + queryAdapter);
+		}
+	}
+
+	@Override
+	public synchronized MappingContext<?, HibernateSearchPersistentProperty> getMappingContext() {
     if (mappingContext == null) {
       mappingContext = new SimpleHibernateSearchMappingContext<>();
     }

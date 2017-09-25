@@ -20,6 +20,7 @@ import java.util.stream.Stream;
 
 import me.snowdrop.data.hibernatesearch.core.mapping.HibernateSearchPersistentProperty;
 import me.snowdrop.data.hibernatesearch.spi.Query;
+import org.hibernate.search.spi.SearchIntegrator;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Slice;
 import org.springframework.data.mapping.context.MappingContext;
@@ -29,7 +30,20 @@ import org.springframework.data.mapping.context.MappingContext;
  */
 public interface HibernateSearchOperations {
 
-  MappingContext<?, HibernateSearchPersistentProperty> getMappingContext();
+	/**
+	 * Get search integrator for entity class.
+	 *
+	 * @param entityClass the entity class
+	 * @return the search integrator
+	 */
+	SearchIntegrator getSearchIntegrator(Class<?> entityClass);
+
+	/**
+	 * Get mapping context.
+	 *
+	 * @return the mapping context
+	 */
+	MappingContext<?, HibernateSearchPersistentProperty> getMappingContext();
 
   /**
    * Returns the number of entities available.

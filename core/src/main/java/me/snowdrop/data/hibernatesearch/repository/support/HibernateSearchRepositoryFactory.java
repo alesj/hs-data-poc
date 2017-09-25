@@ -16,8 +16,8 @@
 
 package me.snowdrop.data.hibernatesearch.repository.support;
 
-import java.io.Serializable;
 import java.lang.reflect.Method;
+import java.util.Optional;
 import java.util.UUID;
 
 import me.snowdrop.data.hibernatesearch.core.HibernateSearchOperations;
@@ -46,9 +46,9 @@ public class HibernateSearchRepositoryFactory extends RepositoryFactorySupport {
     this.hibernateSearchOperations = hibernateSearchOperations;
   }
 
-  @Override
-  public <T, ID extends Serializable> EntityInformation<T, ID> getEntityInformation(Class<T> aClass) {
-    PersistentEntity<?, HibernateSearchPersistentProperty> persistentEntity = hibernateSearchOperations.getMappingContext().getPersistentEntity(aClass);
+	@Override
+	public <T, ID> EntityInformation<T, ID> getEntityInformation(Class<T> aClass) {
+		PersistentEntity<?, HibernateSearchPersistentProperty> persistentEntity = hibernateSearchOperations.getMappingContext().getPersistentEntity(aClass);
     return new MappingHibernateSearchEntityInformation(persistentEntity);
   }
 
@@ -72,9 +72,9 @@ public class HibernateSearchRepositoryFactory extends RepositoryFactorySupport {
   }
 
   @Override
-  protected QueryLookupStrategy getQueryLookupStrategy(QueryLookupStrategy.Key key, EvaluationContextProvider evaluationContextProvider) {
-    return new HibernateSearchQueryLookupStrategy();
-  }
+	protected Optional<QueryLookupStrategy> getQueryLookupStrategy(QueryLookupStrategy.Key key, EvaluationContextProvider evaluationContextProvider) {
+		return Optional.of(new HibernateSearchQueryLookupStrategy());
+	}
 
   private class HibernateSearchQueryLookupStrategy implements QueryLookupStrategy {
 

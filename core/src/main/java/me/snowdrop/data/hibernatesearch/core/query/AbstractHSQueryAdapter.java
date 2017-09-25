@@ -58,9 +58,9 @@ public abstract class AbstractHSQueryAdapter<T> extends AbstractQueryAdapter<T> 
     hsQuery.sort(sort);
   }
 
-  protected void setFirstResult(int firstResult) {
-    hsQuery.firstResult(firstResult);
-  }
+	protected void setFirstResult(long firstResult) {
+		hsQuery.firstResult((int) firstResult);
+	}
 
   protected void setMaxResults(int maxResults) {
     hsQuery.maxResults(maxResults);

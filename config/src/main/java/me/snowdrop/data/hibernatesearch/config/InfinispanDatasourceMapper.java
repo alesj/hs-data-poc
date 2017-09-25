@@ -81,7 +81,7 @@ public class InfinispanDatasourceMapper implements DatasourceMapper {
     }
 
     @Override
-    protected SearchIntegrator getSearchIntegrator() {
+    public SearchIntegrator getSearchIntegrator() {
       return searchManager.unwrap(SearchIntegrator.class);
     }
 
@@ -96,9 +96,9 @@ public class InfinispanDatasourceMapper implements DatasourceMapper {
     }
 
     @Override
-    protected void setFirstResult(int firstResult) {
-      cacheQuery.firstResult(firstResult);
-    }
+		protected void setFirstResult(long firstResult) {
+			cacheQuery.firstResult((int) firstResult);
+		}
 
     @Override
     protected void setMaxResults(int maxResults) {

@@ -24,11 +24,11 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 
-import org.apache.commons.lang.StringUtils;
 import org.springframework.dao.InvalidDataAccessApiUsageException;
 import org.springframework.data.geo.Box;
 import org.springframework.data.geo.Distance;
 import org.springframework.util.Assert;
+import org.springframework.util.StringUtils;
 
 /**
  * Criteria is the central class when constructing queries. It follows more or less a fluent API style, which allows to
@@ -44,12 +44,13 @@ public class Criteria {
   @Override
   public String toString() {
     return "Criteria{" +
-      "property=" + property.getName() +
+      "field=" + field.getName() +
       ", boost=" + boost +
       ", negating=" + negating +
-      ", queryCriteria=" + StringUtils.join(queryCriteria, '|') +
+      ", queryCriteria=" + StringUtils.collectionToDelimitedString(queryCriteria, "|") +
       '}';
   }
+
 
   public static final String WILDCARD = "*";
   public static final String CRITERIA_VALUE_SEPERATOR = " ";
@@ -57,7 +58,7 @@ public class Criteria {
   private static final String OR_OPERATOR = " OR ";
   private static final String AND_OPERATOR = " AND ";
 
-  private Property property;
+  private Field field;
   private float boost = Float.NaN;
   private boolean negating = false;
 
@@ -69,78 +70,78 @@ public class Criteria {
   }
 
   /**
-   * Creates a new Criteria with provided property name
+   * Creates a new Criteria with provided field name
    *
-   * @param propertyName the property name
+   * @param fieldName the field name
    */
-  public Criteria(String propertyName) {
-    this(new SimpleProperty(propertyName));
+  public Criteria(String fieldName) {
+    this(new SimpleField(fieldName));
   }
 
   /**
    * Creates a new Criteria for the given field
    *
-   * @param property the property
+   * @param field the property
    */
-  public Criteria(Property property) {
-    Assert.notNull(property, "Field for criteria must not be null");
-    Assert.hasText(property.getName(), "Field.name for criteria must not be null/empty");
+  public Criteria(Field field) {
+    Assert.notNull(field, "Field for criteria must not be null");
+    Assert.hasText(field.getName(), "Field.name for criteria must not be null/empty");
     this.criteriaChain.add(this);
-    this.property = property;
+    this.field = field;
   }
 
   protected Criteria(List<Criteria> criteriaChain, String fieldname) {
-    this(criteriaChain, new SimpleProperty(fieldname));
+    this(criteriaChain, new SimpleField(fieldname));
   }
 
-  protected Criteria(List<Criteria> criteriaChain, Property property) {
+  protected Criteria(List<Criteria> criteriaChain, Field field) {
     Assert.notNull(criteriaChain, "CriteriaChain must not be null");
-    Assert.notNull(property, "Field for criteria must not be null");
-    Assert.hasText(property.getName(), "Field.name for criteria must not be null/empty");
+    Assert.notNull(field, "Field for criteria must not be null");
+    Assert.hasText(field.getName(), "Field.name for criteria must not be null/empty");
 
     this.criteriaChain.addAll(criteriaChain);
     this.criteriaChain.add(this);
-    this.property = property;
+    this.field = field;
   }
 
   /**
-   * Static factory method to create a new Criteria for propertyName with given name
+   * Static factory method to create a new Criteria for fieldName with given name
    *
-   * @param propertyName the propertyName
+   * @param fieldName the fieldName
    * @return new criteria instance
    */
-  public static Criteria where(String propertyName) {
-    return where(new SimpleProperty(propertyName));
+  public static Criteria where(String fieldName) {
+    return where(new SimpleField(fieldName));
   }
 
   /**
    * Static factory method to create a new Criteria for provided field
    *
-   * @param property the prooperty
+   * @param field the prooperty
    * @return new criteria instance
    */
-  public static Criteria where(Property property) {
-    return new Criteria(property);
+  public static Criteria where(Field field) {
+    return new Criteria(field);
   }
 
   /**
    * Chain using {@code AND}
    *
-   * @param property
+   * @param field
    * @return new criteria instance
    */
-  public Criteria and(Property property) {
-    return new Criteria(this.criteriaChain, property);
+  public Criteria and(Field field) {
+    return new Criteria(this.criteriaChain, field);
   }
 
   /**
    * Chain using {@code AND}
    *
-   * @param propertyName the property name
+   * @param fieldName the property name
    * @return new criteria instance
    */
-  public Criteria and(String propertyName) {
-    return new Criteria(this.criteriaChain, propertyName);
+  public Criteria and(String fieldName) {
+    return new Criteria(this.criteriaChain, fieldName);
   }
 
   /**
@@ -168,11 +169,11 @@ public class Criteria {
   /**
    * Chain using {@code OR}
    *
-   * @param property
+   * @param field
    * @return new criteria instance
    */
-  public Criteria or(Property property) {
-    return new OrCriteria(this.criteriaChain, property);
+  public Criteria or(Field field) {
+    return new OrCriteria(this.criteriaChain, field);
   }
 
   /**
@@ -184,7 +185,7 @@ public class Criteria {
   public Criteria or(Criteria criteria) {
     Assert.notNull(criteria, "Cannot chain 'null' criteria.");
 
-    Criteria orConnectedCritiera = new OrCriteria(this.criteriaChain, criteria.getProperty());
+    Criteria orConnectedCritiera = new OrCriteria(this.criteriaChain, criteria.getField());
     orConnectedCritiera.queryCriteria.addAll(criteria.queryCriteria);
     return orConnectedCritiera;
   }
@@ -196,7 +197,7 @@ public class Criteria {
    * @return new criteria instance
    */
   public Criteria or(String fieldName) {
-    return or(new SimpleProperty(fieldName));
+    return or(new SimpleField(fieldName));
   }
 
   /**
@@ -441,22 +442,8 @@ public class Criteria {
     return this;
   }
 
-  /**
-   * Creates new CriteriaEntry for bounding box created from points
-   *
-   * @param topLeftGeohash     left top corner of bounding box as geohash
-   * @param bottomRightGeohash right bottom corner of bounding box as geohash
-   * @return new criteria instance Criteria the chaind criteria with the new 'boundedBy' criteria included.
-   */
-  public Criteria boundedBy(String topLeftGeohash, String bottomRightGeohash) {
-    Assert.isTrue(StringUtils.isNotBlank(topLeftGeohash), "topLeftGeohash must not be empty");
-    Assert.isTrue(StringUtils.isNotBlank(bottomRightGeohash), "bottomRightGeohash must not be empty");
-    queryCriteria.add(new CriteriaEntry(OperationKey.BBOX, new Object[]{topLeftGeohash, bottomRightGeohash}));
-    return this;
-  }
-
   private void assertNoBlankInWildcardedQuery(String searchString, boolean leadingWildcard, boolean trailingWildcard) {
-    if (StringUtils.contains(searchString, CRITERIA_VALUE_SEPERATOR)) {
+    if (searchString.contains(CRITERIA_VALUE_SEPERATOR)) {
       throw new InvalidDataAccessApiUsageException("Cannot constructQuery '" + (leadingWildcard ? "*" : "") + "\""
         + searchString + "\"" + (trailingWildcard ? "*" : "") + "'. Use expression or multiple clauses instead.");
     }
@@ -467,8 +454,8 @@ public class Criteria {
    *
    * @return new criteria instance
    */
-  public Property getProperty() {
-    return this.property;
+  public Field getField() {
+    return this.field;
   }
 
   public Set<CriteriaEntry> getQueryCriteriaEntries() {
@@ -510,12 +497,12 @@ public class Criteria {
       super();
     }
 
-    public OrCriteria(Property property) {
-      super(property);
+    public OrCriteria(Field field) {
+      super(field);
     }
 
-    public OrCriteria(List<Criteria> criteriaChain, Property property) {
-      super(criteriaChain, property);
+    public OrCriteria(List<Criteria> criteriaChain, Field field) {
+      super(criteriaChain, field);
     }
 
     public OrCriteria(List<Criteria> criteriaChain, String fieldname) {

@@ -56,9 +56,9 @@ public interface OpsRepository extends HibernateSearchRepository<SimpleEntity, L
 
   List<SimpleEntity> findByNameNotIn(Collection<String> names);
 
-  List<SimpleEntity> findByBuulTrue();
+	List<SimpleEntity> findByBooolTrue();
 
-  List<SimpleEntity> findByBuulFalse();
+	List<SimpleEntity> findByBooolFalse();
 
   Stream<SimpleEntity> findByColor(String color);
 
@@ -96,9 +96,9 @@ public interface OpsRepository extends HibernateSearchRepository<SimpleEntity, L
 
   List<SimpleEntity> findByNameNotIn(Collection<String> names, Sort sort);
 
-  List<SimpleEntity> findByBuulTrue(Sort sort);
+	List<SimpleEntity> findByBooolTrue(Sort sort);
 
-  List<SimpleEntity> findByBuulFalse(Sort sort);
+	List<SimpleEntity> findByBooolFalse(Sort sort);
 
   List<SimpleEntity> findByColorOrderByNameAsc(String color);
 

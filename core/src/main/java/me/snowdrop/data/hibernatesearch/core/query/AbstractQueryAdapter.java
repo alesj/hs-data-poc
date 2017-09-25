@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.stream.Stream;
 
 import me.snowdrop.data.hibernatesearch.spi.QueryAdapter;
+import me.snowdrop.data.hibernatesearch.spi.SearchIntegratorAccessor;
 import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.queryparser.classic.MultiFieldQueryParser;
 import org.apache.lucene.queryparser.classic.ParseException;
@@ -28,7 +29,6 @@ import org.apache.lucene.queryparser.classic.QueryParser;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.Sort;
 import org.hibernate.search.spi.IndexedTypeIdentifier;
-import org.hibernate.search.spi.SearchIntegrator;
 import org.hibernate.search.spi.impl.PojoIndexedTypeIdentifier;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
 import org.springframework.data.domain.Pageable;
@@ -37,8 +37,8 @@ import org.springframework.data.util.StreamUtils;
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public abstract class AbstractQueryAdapter<T> implements QueryAdapter<T> {
-  protected Class<T> entityClass;
+public abstract class AbstractQueryAdapter<T> implements QueryAdapter<T>, SearchIntegratorAccessor {
+	protected Class<T> entityClass;
 
   private LuceneQueryBuilder queryBuilder;
   private CriteriaConverter criteriaConverter;
@@ -102,13 +102,11 @@ public abstract class AbstractQueryAdapter<T> implements QueryAdapter<T> {
     return stream();
   }
 
-  protected abstract SearchIntegrator getSearchIntegrator();
-
   protected abstract void applyLuceneQuery(Query query);
 
   protected abstract void setSort(Sort sort);
 
-  protected abstract void setFirstResult(int firstResult);
+	protected abstract void setFirstResult(long firstResult);
 
   protected abstract void setMaxResults(int maxResults);
 
@@ -156,16 +154,16 @@ public abstract class AbstractQueryAdapter<T> implements QueryAdapter<T> {
   }
 
   private void addSortToQuery(org.springframework.data.domain.Sort sort) {
-    if (sort != null) {
-      Sort hsSort = criteriaConverter.convert(sort);
+		if (sort != null && sort.isSorted()) {
+			Sort hsSort = criteriaConverter.convert(sort);
       setSort(hsSort);
     }
   }
 
   private void addPagingToQuery(me.snowdrop.data.hibernatesearch.spi.Query query) {
     Pageable pageable = query.getPageable();
-    if (pageable != null) {
-      org.springframework.data.domain.Sort sort = pageable.getSort();
+		if (pageable != null && pageable.isPaged()) {
+			org.springframework.data.domain.Sort sort = pageable.getSort();
       if (query.getSort() == null && sort != null) {
         addSortToQuery(sort);
       }

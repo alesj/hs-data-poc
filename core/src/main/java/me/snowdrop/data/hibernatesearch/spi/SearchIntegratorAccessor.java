@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package me.snowdrop.data.hibernatesearch.core.query;
+package me.snowdrop.data.hibernatesearch.spi;
+
+import org.hibernate.search.spi.SearchIntegrator;
 
 /**
  * @author <a href="mailto:ales.justin@jboss.org">Ales Justin</a>
  */
-public class SimpleProperty implements Property {
-  private final String name;
-
-  public SimpleProperty(String name) {
-    this.name = name;
-  }
-
-  @Override
-  public String getName() {
-    return name;
-  }
+public interface SearchIntegratorAccessor {
+	SearchIntegrator getSearchIntegrator();
 }

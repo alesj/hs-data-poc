@@ -20,7 +20,6 @@ import java.util.Collections;
 import java.util.Optional;
 import java.util.stream.Stream;
 
-import me.snowdrop.data.hibernatesearch.TestUtils;
 import org.junit.Assert;
 import org.junit.Test;
 import org.springframework.dao.IncorrectResultSizeDataAccessException;
@@ -34,8 +33,8 @@ public class OpsDefaultBase extends OpsTestsBase {
   @Test
   public void testDefaults() {
     assertSize(repository.findAll(), 6);
-    assertSize(repository.findAll(new PageRequest(1, 3)), 3);
-  }
+		assertSize(repository.findAll(PageRequest.of(1, 3)), 3);
+	}
 
   @Test
   public void testCountBy() {
@@ -108,14 +107,14 @@ public class OpsDefaultBase extends OpsTestsBase {
   }
 
   @Test
-  public void testFindByBuulTrue() {
-    assertSize(repository.findByBuulTrue(), 3);
-  }
+	public void testFindByBooollTrue() {
+		assertSize(repository.findByBooolTrue(), 3);
+	}
 
   @Test
-  public void testFindByBuulFalse() {
-    assertSize(repository.findByBuulFalse(), 3);
-  }
+	public void testFindByBooolFalse() {
+		assertSize(repository.findByBooolFalse(), 3);
+	}
 
   @Test
   public void testNestedProps() {

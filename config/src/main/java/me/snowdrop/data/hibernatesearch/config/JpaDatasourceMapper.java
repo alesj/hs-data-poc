@@ -67,7 +67,7 @@ public class JpaDatasourceMapper implements DatasourceMapper {
       }
     }
 
-    protected SearchIntegrator getSearchIntegrator() {
+    public SearchIntegrator getSearchIntegrator() {
       if (searchIntegrator == null) {
         searchIntegrator = ContextHelper.getSearchIntegratorBySF(emf.unwrap(SessionFactoryImplementor.class));
       }
@@ -88,9 +88,9 @@ public class JpaDatasourceMapper implements DatasourceMapper {
       fullTextQuery.setSort(sort);
     }
 
-    protected void setFirstResult(int firstResult) {
-      fullTextQuery.setFirstResult(firstResult);
-    }
+		protected void setFirstResult(long firstResult) {
+			fullTextQuery.setFirstResult((int) firstResult);
+		}
 
     protected void setMaxResults(int maxResults) {
       fullTextQuery.setMaxResults(maxResults);

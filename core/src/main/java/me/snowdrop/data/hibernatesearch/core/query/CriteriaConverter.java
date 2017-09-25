@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.ListIterator;
-import java.util.Set;
 
 import org.apache.lucene.search.BoostQuery;
 import org.apache.lucene.search.Query;
@@ -48,22 +47,16 @@ public class CriteriaConverter {
     this.queryBuilder = queryBuilder;
   }
 
-  private FieldDescriptor getFieldDescriptor(Property property) {
-    Set<FieldDescriptor> fieldsForProperty = indexedTypeDescriptor.getFieldsForProperty(property.getName());
-    if (fieldsForProperty.size() != 1) {
-      // TODO - we could pass in some hint from Query in case of multiple fields, on which field to use
-      throw new IllegalArgumentException("Invalid fields size: " + fieldsForProperty);
-    }
-    return fieldsForProperty.iterator().next();
-  }
+  private FieldDescriptor getFieldDescriptor(String fieldName) {
+		return indexedTypeDescriptor.getIndexedField(fieldName);
+	}
 
-  private String getFieldName(Property property) {
-    FieldDescriptor fieldDescriptor = getFieldDescriptor(property);
-    return fieldDescriptor.getName();
-  }
+  private String getFieldName(Field field) {
+		return field.getName();
+	}
 
-  private SortField.Type getFieldType(Property property) {
-    FieldDescriptor fieldDescriptor = getFieldDescriptor(property);
+  private SortField.Type getFieldType(String fieldName) {
+    FieldDescriptor fieldDescriptor = getFieldDescriptor(fieldName);
     switch (fieldDescriptor.getType()) {
       case NUMERIC:
         return SortField.Type.DOUBLE; // TODO -- ?
@@ -86,9 +79,8 @@ public class CriteriaConverter {
 
   private SortField convertToSortField(org.springframework.data.domain.Sort.Order order) {
     boolean reverse = (order.getDirection() == org.springframework.data.domain.Sort.Direction.DESC);
-    Property property = new SimpleProperty(order.getProperty());
-    String fieldName = getFieldName(property);
-    SortField.Type type = getFieldType(property);
+    String fieldName = order.getProperty();
+    SortField.Type type = getFieldType(fieldName);
     return new SortField(fieldName, type, reverse);
   }
 
@@ -157,7 +149,7 @@ public class CriteriaConverter {
   public Query processCriteriaEntries(Criteria criteria) {
     List<Query> queries = new ArrayList<>();
     for (Criteria.CriteriaEntry criteriaEntry : criteria.getQueryCriteriaEntries()) {
-      Query subQuery = processCriteriaEntry(criteria.getProperty(), criteriaEntry);
+      Query subQuery = processCriteriaEntry(criteria.getField(), criteriaEntry);
       if (!Float.isNaN(criteria.getBoost())) {
         subQuery = new BoostQuery(subQuery, criteria.getBoost());
       }
@@ -166,10 +158,10 @@ public class CriteriaConverter {
     return queryBuilder.all(queries);
   }
 
-  public Query processCriteriaEntry(Property property, Criteria.CriteriaEntry criteriaEntry) {
+  public Query processCriteriaEntry(Field field, Criteria.CriteriaEntry criteriaEntry) {
     Object value = criteriaEntry.getValue();
 
-    String fieldName = getFieldName(property);
+    String fieldName = getFieldName(field);
 
     switch (criteriaEntry.getKey()) {
       case EQUALS:
