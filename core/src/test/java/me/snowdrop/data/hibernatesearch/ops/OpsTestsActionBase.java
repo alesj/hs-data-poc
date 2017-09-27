@@ -37,37 +37,43 @@ public abstract class OpsTestsActionBase implements TestsAction {
     SimpleEntity entity = new SimpleEntity(
             1L, "ann", "Does Ann like good red apples?", -20, true,
             "Superman", "red", new Location(10.0, 10.0),
-            Arrays.asList(frankDalton, emmettDalton)
+			new Address(1360, "Vrhnika", "Slovenia"),
+			Arrays.asList(frankDalton, emmettDalton)
     );
     entities.add(entity);
     entity = new SimpleEntity(
             2L, "barb", "Why is Barb dancing twist?", -10, true,
             "Spiderman", "red", new Location(24.0, 32.0),
-            Collections.emptyList()
-    );
+			new Address(1360, "Vrhnika", "Slovenia"),
+			Collections.emptyList()
+		);
     entities.add(entity);
     entity = new SimpleEntity(
             3L, "carl", "Carl is good at running and jumping.", 0, true,
             "Flash", "red", new Location(20.0, 20.0),
-            Collections.emptyList()
-    );
+			new Address(1000, "Ljubljana", "Slovenia"),
+			Collections.emptyList()
+		);
     entities.add(entity);
     entity = new SimpleEntity(
             4L, "doug", "Doug likes to sleeps.", 10, false,
             "Batman", "black", new Location(-10.0, -10.0),
-            Collections.emptyList()
+			new Address(4000, "Kranj", "Slovenia"),
+			Collections.emptyList()
     );
     entities.add(entity);
     entity = new SimpleEntity(
             5L, "eva", "Eva is running in circles.", 20, false,
             "Ironman", "gold", new Location(-20.0, 5.0),
-            Arrays.asList(oliverTwist)
-    );
+			new Address(2000, "Maribor", "Slovenia"),
+			Collections.singletonList(oliverTwist)
+		);
     entities.add(entity);
     entity = new SimpleEntity(
             6L, "fanny", "Fanny is reading a good book.", 30, false,
             "Aquaman", "blue", new Location(5.0, -20.0),
-            Collections.emptyList()
+			new Address(3000, "Celje", "Slovenia"),
+			Collections.emptyList()
     );
     entities.add(entity);
 

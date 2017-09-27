@@ -78,7 +78,10 @@ public class SimpleEntity implements AbstractEntity {
   @Spatial
   @Embedded
   private Location location;
-  @IndexedEmbedded(prefix = "containedList.somePrefix_")
+	@IndexedEmbedded
+	@Embedded
+	private Address address;
+	@IndexedEmbedded(prefix = "containedList.somePrefix_")
   @OneToMany
   private List<ContainedEntity> contained;
 }
