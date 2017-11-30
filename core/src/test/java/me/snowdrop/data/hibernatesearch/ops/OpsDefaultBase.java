@@ -67,7 +67,7 @@ public class OpsDefaultBase extends OpsTestBase {
 
   @Test
   public void testFindByNumberBefore() {
-    assertSize(repository.findByNumberBefore(10), 5);
+      assertSize(repository.findByNumberBefore(10), 4);
   }
 
   @Test
@@ -77,7 +77,7 @@ public class OpsDefaultBase extends OpsTestBase {
 
   @Test
   public void testFindByNumberAfter() {
-    assertSize(repository.findByNumberAfter(20), 2);
+      assertSize(repository.findByNumberAfter(20), 1);
   }
 
   @Test
