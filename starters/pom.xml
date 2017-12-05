@@ -34,8 +34,9 @@
   <url>https://github.com/snowdrop/spring-data-hibernate-search</url>
 
   <modules>
-    <module>infinispan</module>
+    <module>embedded</module>
     <module>jpa</module>
+    <module>remote</module>
   </modules>
 
 </project>
