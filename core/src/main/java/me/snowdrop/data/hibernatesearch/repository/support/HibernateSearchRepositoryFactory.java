@@ -30,6 +30,8 @@ import me.snowdrop.data.hibernatesearch.repository.query.HibernateSearchStringQu
 import me.snowdrop.data.repository.extension.support.ExtendingRepositoryFactorySupport;
 import org.springframework.data.mapping.PersistentEntity;
 import org.springframework.data.projection.ProjectionFactory;
+import org.springframework.data.querydsl.QuerydslPredicateExecutor;
+import org.springframework.data.querydsl.QuerydslUtils;
 import org.springframework.data.repository.core.EntityInformation;
 import org.springframework.data.repository.core.NamedQueries;
 import org.springframework.data.repository.core.RepositoryInformation;
@@ -50,7 +52,10 @@ public class HibernateSearchRepositoryFactory extends ExtendingRepositoryFactory
     }
 
     private Class<?> getExactRepositoryBaseClass(RepositoryMetadata metadata) {
-        if (HibernateSearchCrudRepository.class.isAssignableFrom(metadata.getRepositoryInterface())) {
+        Class<?> repositoryInterface = metadata.getRepositoryInterface();
+        if (QuerydslUtils.QUERY_DSL_PRESENT && QuerydslPredicateExecutor.class.isAssignableFrom(repositoryInterface)) {
+            return QuerydslRepository.class;
+        } else if (HibernateSearchCrudRepository.class.isAssignableFrom(repositoryInterface)) {
             return SimpleCrudRepository.class;
         } else {
             return SimpleRepository.class;

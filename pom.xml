@@ -39,6 +39,8 @@
     <lucene>5.5.4</lucene>
     <infinispan>9.2.0.Beta2</infinispan>
 
+    <querydsl>4.1.4</querydsl>
+
     <lombok>1.16.18</lombok>
     <cdi>1.0</cdi>
     <log4j>2.8.2</log4j>
@@ -152,6 +154,20 @@
         <groupId>org.apache.lucene</groupId>
         <artifactId>lucene-queryparser</artifactId>
         <version>${lucene}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>com.querydsl</groupId>
+        <artifactId>querydsl-core</artifactId>
+        <version>${querydsl}</version>
+        <optional>true</optional>
+      </dependency>
+
+      <dependency>
+        <groupId>com.querydsl</groupId>
+        <artifactId>querydsl-lucene5</artifactId>
+        <version>${querydsl}</version>
+        <optional>true</optional>
       </dependency>
 
       <!-- CDI -->

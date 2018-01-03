@@ -94,6 +94,16 @@
       <artifactId>log4j-core</artifactId>
     </dependency>
 
+    <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-core</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>com.querydsl</groupId>
+      <artifactId>querydsl-lucene5</artifactId>
+    </dependency>
+
     <!-- CDI -->
     <dependency>
       <groupId>javax.enterprise</groupId>
