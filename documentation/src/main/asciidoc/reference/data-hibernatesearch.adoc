@@ -22,7 +22,7 @@ Add a dependency to `me.snowdrop.data:spring-data-hibernate-search-starter-jpa:{
 
 https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#jpa.introduction[Set up the JPA Spring Data module as usual],
 except you need to override the repository factory bean class
-and set it to `me.snowdrop.data.hibernatesearch.orm.repository.support.JpaWithHibernateSearchRepositoryFactoryBean`.
+and set it to `me.snowdrop.data.snowdrop.orm.repository.support.JpaWithSnowdropRepositoryFactoryBean`.
 
 .Hibernate Search extension to JPA repositories using JavaConfig
 ====
@@ -31,7 +31,7 @@ and set it to `me.snowdrop.data.hibernatesearch.orm.repository.support.JpaWithHi
 @Configuration
 @EnableJpaRepositories(
         basePackages = "com/example/repositories",
-        repositoryFactoryBeanClass = JpaWithHibernateSearchRepositoryFactoryBean.class
+        repositoryFactoryBeanClass = JpaWithSnowdropRepositoryFactoryBean.class
 )
 public class Config {
 }
@@ -72,7 +72,7 @@ add a dependency to `me.snowdrop.data:spring-data-hibernate-search-starter-infin
 [[hibernatesearch.standalone.configuration.annotation]]
 === Annotation-based configuration
 
-Spring Data Hibernate Search Repositories can be activated using the `@EnableHibernateSearchRepositories` annotation.
+Spring Data Hibernate Search Repositories can be activated using the `@EnableSnowdropRepositories` annotation.
 
 Apart from `datasourceMapperRef`, this annotation's attributes are standard and defined in
 https://docs.spring.io/spring-data/jpa/docs/current/reference/html/#repositories.namespace-reference[Spring Data Commons' documentation]
@@ -87,7 +87,7 @@ The configuration is simpler when using Spring Boot's auto-configuration:
 ----
 @Configuration
 @EnableAutoConfiguration
-@EnableHibernateSearchRepositories(basePackages = "com/example/repositories")
+@EnableSnowdropRepositories(basePackages = "com/example/repositories")
 public class Config {
 }
 ----
@@ -113,7 +113,7 @@ WARNING: CDI integration is not implemented yet.
 If you don't want to use auto configuration for some reason,
 you need to add a bean of type `me.snowdrop.data.hibernatesearch.spi.DatasourceMapper` to the context.
 The Hibernate Search Spring Data module will look for such a bean named `datasourceMapper` by default,
-but you can customize the bean name using `@EnableHibernateSearchRepositories.datasourceMapperRef`.
+but you can customize the bean name using `@EnableSnowdropRepositories.datasourceMapperRef`.
 
 When using Hibernate Search integrated to Hibernate ORM,
 you can declare the bean as an instance of `me.snowdrop.data.hibernatesearch.orm.JpaDatasourceMapper`.
@@ -144,7 +144,7 @@ see <<hibernatesearch.jpaextension>>.
 
 In order to add a Hibernate Search extension to a JPA repository, you need to:
 
-* create an interface extending `me.snowdrop.data.hibernatesearch.repository.extension.RepositoryHibernateSearchExtension<T, ID>`
+* create an interface extending `me.snowdrop.data.hibernatesearch.repository.extension.RepositorySnowdropExtension<T, ID>`
 * add to this interface the methods that are to be implemented as Hibernate Search queries
 * make the interface of your JPA repository extend this interface
 
@@ -152,11 +152,11 @@ In order to add a Hibernate Search extension to a JPA repository, you need to:
 ====
 [source,java,options="nowrap"]
 ----
-public interface BookRepositoryHibernateSearchExtension extends RepositoryHibernateSearchExtension<Book, String> {
+public interface BookRepositorySnowdropExtension extends RepositorySnowdropExtension<Book, String> {
     List<Book> findByName(String name);
 }
 
-public interface BookRepository extends JpaRepository<Book, String>, BookRepositoryHibernateSearchExtension {
+public interface BookRepository extends JpaRepository<Book, String>, BookRepositorySnowdropExtension {
     List<Book> findByPrice(Integer price);
 }
 
@@ -181,9 +181,9 @@ public class SomeComponent {
 
 To declare repository interfaces, you can extend either the generic `org.springframework.data.repository.Repository<T, ID>` interface
 (if there is no ambiguity as to which Spring Data module should implement the repository)
-or the more specific `me.snowdrop.data.hibernatesearch.repository.HibernateSearchRepository<T, ID>`.
+or the more specific `me.snowdrop.data.hibernatesearch.repository.SnowdropRepository<T, ID>`.
 
-If you also need simple CRUD operations, extend `me.snowdrop.data.hibernatesearch.repository.HibernateSearchCrudRepository<T, ID>`.
+If you also need simple CRUD operations, extend `me.snowdrop.data.hibernatesearch.repository.SnowdropCrudRepository<T, ID>`.
 
 [[hibernatesearch.query-methods]]
 = Query methods
@@ -417,7 +417,7 @@ You can use the `@me.snowdrop.data.hibernatesearch.annotations.TargetField` anno
 ====
 [source,java,options="nowrap"]
 ----
-public interface BookRepository extends HibernateSearchRepository<Book, String> {
+public interface BookRepository extends SnowdropRepository<Book, String> {
     @TargetField(property = "name", field = "name_sort")
     Page<Book> findByAvailableTrueOrderByNameAsc(String name, Pageable pageable);
 }
@@ -440,7 +440,7 @@ Alternatively, the queries can be assigned to the method directly using `@Query(
 ====
 [source,java,options="nowrap"]
 ----
-public interface BookRepository extends HibernateSearchRepository<Book, String> {
+public interface BookRepository extends SnowdropRepository<Book, String> {
     @Query("+name:?0")
     Page<Book> findByName(String name, Pageable pageable);
 }                
